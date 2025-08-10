@@ -1,13 +1,18 @@
 package com.expensetracker.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class ExpenseResponse {
     private Long id;
-    private String title;
-    private Double amount;
     private String category;
-    private LocalDate date;
+    private BigDecimal amount;
+    private String description;
+    private LocalDate dateOfExpense;
+    private boolean active;
+    private Long userId;
+
+    // getters/setters
 
     public Long getId() {
         return id;
@@ -15,22 +20,6 @@ public class ExpenseResponse {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public Double getAmount() {
-        return amount;
-    }
-
-    public void setAmount(Double amount) {
-        this.amount = amount;
     }
 
     public String getCategory() {
@@ -41,11 +30,43 @@ public class ExpenseResponse {
         this.category = category;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public BigDecimal getAmount() {
+        return amount;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LocalDate getDateOfExpense() {
+        return dateOfExpense;
+    }
+
+    public void setDateOfExpense(LocalDate dateOfExpense) {
+        this.dateOfExpense = dateOfExpense;
+    }
+
+    public boolean getActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

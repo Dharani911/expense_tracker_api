@@ -1,36 +1,27 @@
 package com.expensetracker.dto;
 
 import jakarta.validation.constraints.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class ExpenseRequest {
-    @NotBlank @Size(max = 120)
-    private String title;
 
-    @NotNull @Positive
-    private Double amount;
-
-    @NotBlank @Size(max = 60)
+    @NotBlank
+    @Size(max = 50) // matches VARCHAR(50)
     private String category;
 
-    @NotNull @PastOrPresent
-    private LocalDate date;
+    @NotNull
+    @DecimalMin(value = "0.01", message = "Amount must be > 0")
+    @Digits(integer = 10, fraction = 2) // matches NUMERIC(10,2)
+    private BigDecimal amount;
 
-    public String getTitle() {
-        return title;
-    }
+    @Size(max = 1000)
+    private String description;
 
-    public void setTitle(String title) {
-        this.title = title;
-    }
+    @NotNull
+    private LocalDate dateOfExpense;
 
-    public Double getAmount() {
-        return amount;
-    }
-
-    public void setAmount(Double amount) {
-        this.amount = amount;
-    }
+    // getters/setters
 
     public String getCategory() {
         return category;
@@ -40,11 +31,27 @@ public class ExpenseRequest {
         this.category = category;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public BigDecimal getAmount() {
+        return amount;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LocalDate getDateOfExpense() {
+        return dateOfExpense;
+    }
+
+    public void setDateOfExpense(LocalDate dateOfExpense) {
+        this.dateOfExpense = dateOfExpense;
     }
 }

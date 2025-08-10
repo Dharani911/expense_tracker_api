@@ -6,6 +6,7 @@ import com.expensetracker.model.Expense;
 import com.expensetracker.exception.ResourceNotFoundException;
 import com.expensetracker.repository.ExpenseRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -32,32 +33,25 @@ public class ExpenseService {
                 .orElseThrow(() -> new ResourceNotFoundException("Expense not found with id: " + id));
     }
 
+    @Transactional
     public Expense updateExpense(Long id, Expense expenseDetails) {
         Expense expense = getExpenseById(id);
         if (expense != null) {
-            expense.setTitle(expenseDetails.getTitle());
             expense.setAmount(expenseDetails.getAmount());
             expense.setCategory(expenseDetails.getCategory());
-            expense.setDate(expenseDetails.getDate());
+            expense.setDescription(expenseDetails.getDescription());
+            expense.setDateOfExpense(expenseDetails.getDateOfExpense());
             return expenseRepository.save(expense);
         }
         return null;
     }
 
     public void deleteExpense(Long id) {
+
+        if (!expenseRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Expense not found: " + id);
+        }
         expenseRepository.deleteById(id);
     }
-    public List<ExpenseResponse> searchExpenses(
-            String query,
-            String category,
-            Double minAmount,
-            Double maxAmount,
-            LocalDate startDate,
-            LocalDate endDate
-    ) {
-        return expenseRepository.search(query, category, minAmount, maxAmount, startDate, endDate)
-                .stream()
-                .map(ExpenseMapper::toResponse)
-                .toList();
-    }
+
 }

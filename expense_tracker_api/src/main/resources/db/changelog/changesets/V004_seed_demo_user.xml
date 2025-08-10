@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.20.xsd">
+
+    <changeSet id="V004_seed_demo_user" author="dharani">
+        <insert tableName="user">
+            <column name="username" value="demo_user"/>
+            <column name="name" value="Demo User"/>
+            <column name="email" value="demo@example.com"/>
+            <column name="password" value="Demo@123"/>
+            <column name="active" valueBoolean="true"/>
+            <column name="created_by" value="system"/>
+            <column name="created_date" valueDate="2025-08-10T00:00:00"/>
+        </insert>
+        <rollback>
+            <delete tableName="user">
+                <where>username='demo_user'</where>
+            </delete>
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>

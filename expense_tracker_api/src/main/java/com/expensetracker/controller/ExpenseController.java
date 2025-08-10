@@ -38,13 +38,13 @@ public class ExpenseController {
         return ExpenseMapper.toResponse(expenseEntity);
     }
 
-    @PostMapping
+    /*@PostMapping
     public ResponseEntity<ExpenseResponse> createExpense(@Valid @RequestBody ExpenseRequest expenseRequest) {
         Expense expenseToSave = ExpenseMapper.toEntity(expenseRequest);
         Expense savedExpense = expenseService.createExpense(expenseToSave);
         ExpenseResponse expenseResponse = ExpenseMapper.toResponse(savedExpense);
         return ResponseEntity.ok(expenseResponse);
-    }
+    }*/
 
     @PutMapping("/{id}")
     public ExpenseResponse updateExpense(@RequestParam Long id, @Valid @RequestBody ExpenseRequest expenseRequest) {
@@ -60,15 +60,5 @@ public class ExpenseController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/search")
-    public List<ExpenseResponse> searchExpenses(
-            @RequestParam(required = false) String q,
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) Double minAmount,
-            @RequestParam(required = false) Double maxAmount,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
-    ) {
-        return expenseService.searchExpenses(q, category, minAmount, maxAmount, startDate, endDate);
-    }
+
 }

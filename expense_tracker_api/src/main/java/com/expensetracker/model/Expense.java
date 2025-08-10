@@ -1,94 +1,126 @@
 package com.expensetracker.model;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import jakarta.validation.constraints.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "expenses")
-
+@Table(name = "expense")
+@EntityListeners(AuditingEntityListener.class)
+@Where(clause = "active = true")
+@SQLDelete(sql = "UPDATE expense SET active = false, modified_date = NOW() WHERE id = ?")
 public class Expense {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank @Size(max = 120)
-    private String title;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "category", length = 50, nullable = false)
+    private ExpenseCategory category;
 
-    @NotNull @Positive
-    private Double amount;
+    @Column(name = "amount", precision = 10, scale = 2, nullable = false)
+    private BigDecimal amount;
 
-    @NotBlank @Size(max = 60)
-    private String category;
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
 
-    @NotNull @PastOrPresent
-    private LocalDate date;
+    @Column(name = "date_of_expense", nullable = false)
+    private LocalDate dateOfExpense;
 
-    public Expense() {
-    }
+    @Column(name = "active", nullable = false)
+    private boolean active = true;
 
-    public Expense(Long id, String title, Double amount, String category, LocalDate date) {
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @CreatedBy
+    @Column(name = "created_by", length = 50)
+    private String createdBy;
+
+    @CreatedDate
+    @Column(name = "created_date")
+    private LocalDateTime createdDate;
+
+    @LastModifiedBy
+    @Column(name = "modified_by", length = 50)
+    private String modifiedBy;
+
+    @LastModifiedDate
+    @Column(name = "modified_date")
+    private LocalDateTime modifiedDate;
+
+    public Expense() {}
+
+    public Expense(Long id, ExpenseCategory category, BigDecimal amount, String description, LocalDate dateOfExpense, boolean active, User user) {
         this.id = id;
-        this.title = title;
-        this.amount = amount;
         this.category = category;
-        this.date = date;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public Double getAmount() {
-        return amount;
-    }
-
-    public void setAmount(Double amount) {
         this.amount = amount;
+        this.description = description;
+        this.dateOfExpense = dateOfExpense;
+        this.active = active;
+        this.user = user;
     }
 
-    public String getCategory() {
-        return category;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setCategory(String category) {
-        this.category = category;
-    }
+    public ExpenseCategory getCategory() { return category; }
+    public void setCategory(ExpenseCategory category) { this.category = category; }
 
-    public LocalDate getDate() {
-        return date;
-    }
+    public BigDecimal getAmount() { return amount; }
+    public void setAmount(BigDecimal amount) { this.amount = amount; }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public LocalDate getDateOfExpense() { return dateOfExpense; }
+    public void setDateOfExpense(LocalDate dateOfExpense) { this.dateOfExpense = dateOfExpense; }
+
+    public boolean getActive() { return active; }
+    public void setActive(boolean active) { this.active = active; }
+
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
+
+    public String getCreatedBy() { return createdBy; }
+    public LocalDateTime getCreatedDate() { return createdDate; }
+    public String getModifiedBy() { return modifiedBy; }
+    public LocalDateTime getModifiedDate() { return modifiedDate; }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Expense expense)) return false;
-        return Objects.equals(getId(), expense.getId()) && Objects.equals(getTitle(), expense.getTitle()) && Objects.equals(getAmount(), expense.getAmount()) && Objects.equals(getCategory(), expense.getCategory()) && Objects.equals(getDate(), expense.getDate());
+        return Objects.equals(id, expense.id);
     }
+    @Override
+    public int hashCode() { return Objects.hash(id); }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getTitle(), getAmount(), getCategory(), getDate());
+    public String toString() {
+        return "Expense{" +
+                "id=" + id +
+                ", category='" + category + '\'' +
+                ", amount=" + amount +
+                ", description='" + description + '\'' +
+                ", dateOfExpense=" + dateOfExpense +
+                ", active=" + active +
+                ", user=" + user +
+                ", createdBy='" + createdBy + '\'' +
+                ", createdDate=" + createdDate +
+                ", modifiedBy='" + modifiedBy + '\'' +
+                ", modifiedDate=" + modifiedDate +
+                '}';
     }
-
 }
-
