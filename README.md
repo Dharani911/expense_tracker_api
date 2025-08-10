@@ -1,2 +1,9 @@
-# expense_tracker_api
-A REST API for managing personal expenses with category tracking and summary reports
+# Expense Tracker API
+
+Backend REST API built with Spring Boot for managing and tracking expenses.
+
+🚧 **Work in progress** — first release coming soon with:
+- CRUD endpoints
+- Search and filtering
+- PostgreSQL integration
+- Ready for Angular frontend
