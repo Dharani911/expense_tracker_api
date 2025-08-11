@@ -1,18 +1,23 @@
 package com.expensetracker.dto;
 
+import java.time.Instant;
+
+/**
+ * Represents user details returned to the client (safe fields only).
+ */
 public class UserResponse {
     private Long id;
     private String username;
     private String name;
     private String email;
-    private boolean active;
+    private Boolean active;
+    private Instant createdDate;
+    private Instant modifiedDate;
 
-    // getters/setters
-
+    // Getters and Setters
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -20,7 +25,6 @@ public class UserResponse {
     public String getUsername() {
         return username;
     }
-
     public void setUsername(String username) {
         this.username = username;
     }
@@ -28,7 +32,6 @@ public class UserResponse {
     public String getName() {
         return name;
     }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -36,16 +39,28 @@ public class UserResponse {
     public String getEmail() {
         return email;
     }
-
     public void setEmail(String email) {
         this.email = email;
     }
 
-    public boolean isActive() {
+    public Boolean getActive() {
         return active;
     }
-
-    public void setActive(boolean active) {
+    public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    public Instant getCreatedDate() {
+        return createdDate;
+    }
+    public void setCreatedDate(Instant createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public Instant getModifiedDate() {
+        return modifiedDate;
+    }
+    public void setModifiedDate(Instant modifiedDate) {
+        this.modifiedDate = modifiedDate;
     }
 }
