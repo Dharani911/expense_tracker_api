@@ -1,16 +1,27 @@
-# Compiled class file
+# --- Build output ---
+target/
+.out/
+build/
+
+# --- IDE / project files ---
+*.iml
+.idea/
+.vscode/
+.project
+.classpath
+.settings/
+
+# --- OS cruft ---
+.DS_Store
+Thumbs.db
+
+# --- Java artifacts ---
 *.class
-
-# Log file
 *.log
+hs_err_pid*
+replay_pid*
 
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
+# --- Archives ---
 *.jar
 *.war
 *.nar
@@ -19,6 +30,15 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-replay_pid*
+# --- Local env & secrets (never commit) ---
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.jks
+*.keystore
+
+# --- Spring local overrides (safe patterns) ---
+application-local.properties
+application-local.yml
