@@ -10,9 +10,7 @@ public class UserResponse {
     private String username;
     private String name;
     private String email;
-    private Boolean active;
-    private Instant createdDate;
-    private Instant modifiedDate;
+
 
     // Getters and Setters
     public Long getId() {
@@ -43,24 +41,5 @@ public class UserResponse {
         this.email = email;
     }
 
-    public Boolean getActive() {
-        return active;
-    }
-    public void setActive(Boolean active) {
-        this.active = active;
-    }
 
-    public Instant getCreatedDate() {
-        return createdDate;
-    }
-    public void setCreatedDate(Instant createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public Instant getModifiedDate() {
-        return modifiedDate;
-    }
-    public void setModifiedDate(Instant modifiedDate) {
-        this.modifiedDate = modifiedDate;
-    }
 }

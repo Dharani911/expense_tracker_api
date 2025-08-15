@@ -11,6 +11,8 @@ import com.expensetracker.model.User;
 import com.expensetracker.repository.ExpenseRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -77,27 +79,61 @@ public class ExpenseService {
      * Flexible search over current user's expenses (all filters optional).
      * Sort order is handled in the repository query.
      */
-    public List<ExpenseResponse> searchExpense(
+    @Transactional(readOnly = true)
+    public List<ExpenseResponse> searchExpenses(
             String category, LocalDate start, LocalDate end,
             BigDecimal minAmount, BigDecimal maxAmount, String q) {
 
-        User current = userService.getCurrentUserOrThrow();
+        ensureValid(start, end, minAmount, maxAmount);
+        Long userId = userService.getCurrentUserOrThrow().getId();
+        Specification<Expense> spec = buildSpec(userId, category, start, end, minAmount, maxAmount, q);
 
-        ExpenseCategory catEnum = null;
-        if (category != null && !category.isBlank()) {
-            try {
-                catEnum = ExpenseCategory.valueOf(category.trim().toUpperCase());
-            } catch (IllegalArgumentException ex) {
-                throw new BadRequestException("Invalid category: " + category);
-            }
-        }
+        var sort = Sort.by(Sort.Order.desc("dateOfExpense"), Sort.Order.desc("id"));
+        return expenseRepository.findAll(spec, sort)
+                .stream().map(ExpenseMapper::toResponse).toList();
+    }
 
-        return expenseRepository.searchExpenses(
-                        current.getId(), catEnum, start, end, minAmount, maxAmount,
-                        (q == null || q.isBlank()) ? null : q.trim())
-                .stream()
-                .map(ExpenseMapper::toResponse)
-                .toList();
+    /* ---- helpers (simple + local) ---- */
+
+    private Specification<Expense> buildSpec(
+            Long userId, String category, LocalDate start, LocalDate end,
+            BigDecimal minAmount, BigDecimal maxAmount, String q) {
+
+        ExpenseCategory cat = parseCategory(category);
+        String qLower = normalize(q);
+
+        Specification<Expense> spec = (root, query, cb) ->
+                cb.and(
+                        cb.equal(root.get("user").get("id"), userId),
+                        cb.isTrue(root.get("active"))
+                );
+
+        if (cat != null)       spec = spec.and((r,qy,cb) -> cb.equal(r.get("category"), cat));
+        if (start != null)     spec = spec.and((r,qy,cb) -> cb.greaterThanOrEqualTo(r.get("dateOfExpense"), start));
+        if (end != null)       spec = spec.and((r,qy,cb) -> cb.lessThanOrEqualTo(r.get("dateOfExpense"), end));
+        if (minAmount != null) spec = spec.and((r,qy,cb) -> cb.greaterThanOrEqualTo(r.get("amount"), minAmount));
+        if (maxAmount != null) spec = spec.and((r,qy,cb) -> cb.lessThanOrEqualTo(r.get("amount"), maxAmount));
+        if (qLower != null)    spec = spec.and((r,qy,cb) ->
+                cb.like(cb.lower(cb.coalesce(r.get("description"), "")), "%" + qLower + "%"));
+
+        return spec;
+    }
+
+    private ExpenseCategory parseCategory(String c) {
+        if (c == null || c.isBlank()) return null;
+        try { return ExpenseCategory.valueOf(c.trim().toUpperCase()); }
+        catch (IllegalArgumentException ex) { throw new BadRequestException("Invalid category: " + c); }
+    }
+
+    private void ensureValid(LocalDate start, LocalDate end, BigDecimal min, BigDecimal max) {
+        if (start != null && end != null && start.isAfter(end))
+            throw new BadRequestException("start must be <= end");
+        if (min != null && max != null && min.compareTo(max) > 0)
+            throw new BadRequestException("minAmount must be <= maxAmount");
+    }
+
+    private String normalize(String s) {
+        return (s == null || s.isBlank()) ? null : s.trim().toLowerCase();
     }
 
 }

@@ -34,16 +34,7 @@ public class UserService {
     @Transactional
     public UserResponse updateMyProfile(final UpdateUserRequest req) {
         User user = getCurrentUserOrThrow();
-
-        // Enforce unique email if changed
-        String newEmail = req.getEmail();
-        if (!user.getEmail().equalsIgnoreCase(newEmail)
-                && userRepository.existsByEmail(newEmail)) {
-            throw new BadRequestException("Email already in use.");
-        }
-
         user.setName(req.getName());
-        user.setEmail(newEmail);
         userRepository.save(user);
         return UserMapper.toResponse(user);
     }

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
  * User-facing endpoints for profile read/update and account deactivation.
  */
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/user")
 public class UserController {
 
     private final UserService userService;
@@ -21,19 +21,19 @@ public class UserController {
     }
 
     /** Returns the current user's profile. */
-    @GetMapping("/me")
+    @GetMapping("/profile")
     public ResponseEntity<UserResponse> getMyProfile() {
         return ResponseEntity.ok(userService.getMyProfile());
     }
 
     /** Updates the current user's name/email. */
-    @PutMapping("/me")
+    @PostMapping("/profile/update")
     public ResponseEntity<UserResponse> updateMyProfile(@Valid @RequestBody UpdateUserRequest request) {
         return ResponseEntity.ok(userService.updateMyProfile(request));
     }
 
     /** Soft‑deactivates the current user's account. */
-    @DeleteMapping("/me")
+    @PostMapping("/profile/deactivate")
     public ResponseEntity<Void> deactivateMyAccount() {
         userService.deactivateMyAccount();
         return ResponseEntity.noContent().build();

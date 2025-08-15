@@ -73,6 +73,7 @@ public class AuthService {
     /** For stateless JWT, logout is client-side; we just acknowledge. */
     public void logout(String ignored) {
         // No server state to clear yet (token blacklist could be added later).
+
     }
 
     /** Generates token for the user and maps to AuthResponse (epoch seconds). */
