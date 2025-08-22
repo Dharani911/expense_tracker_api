@@ -6,17 +6,23 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.web.filter.OncePerRequestFilter;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Optional;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
 
-/** Reads Bearer token, validates it, and sets Authentication in the context. */
-@Component
+/**
+ * JWT filter that never blocks: if a valid token is present, it authenticates using
+ * the username stored as JWT subject. Otherwise, it continues unauthenticated.
+ * Skips /api/auth/**, /actuator/**, /error and all OPTIONS preflight requests.
+ */
 public class JwtAuthFilter extends OncePerRequestFilter {
+
+    private static final AntPathMatcher MATCHER = new AntPathMatcher();
 
     private final JwtService jwtService;
     private final UserRepository userRepository;
@@ -26,43 +32,44 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         this.userRepository = userRepository;
     }
 
-    /** Extracts token from header and authenticates current request if valid. */
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain)
-            throws ServletException, IOException {
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        final String path = request.getRequestURI();
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) return true; // CORS preflight
+        return MATCHER.match("/api/auth/**", path)
+                || MATCHER.match("/actuator/**", path)
+                || MATCHER.match("/error", path);
+    }
 
-        String auth = request.getHeader("Authorization");
-
-        if (auth == null || !auth.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
+    @Override
+    protected void doFilterInternal(HttpServletRequest req,
+                                    HttpServletResponse res,
+                                    FilterChain chain) throws ServletException, IOException {
+        try {
+            String header = req.getHeader("Authorization");
+            if (header != null && header.startsWith("Bearer ")) {
+                String token = header.substring(7);
+                if (jwtService.isTokenValid(token)) {
+                    String username = jwtService.getSubject(token); // subject = username
+                    if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                        Optional<User> u = userRepository.findByUsername(username);
+                        if (u.isPresent() && Boolean.TRUE.equals(u.get().getActive())) {
+                            var auth = new UsernamePasswordAuthenticationToken(
+                                    username, null, Collections.emptyList()
+                            );
+                            SecurityContextHolder.getContext().setAuthentication(auth);
+                        } else {
+                            SecurityContextHolder.clearContext();
+                        }
+                    }
+                } else {
+                    SecurityContextHolder.clearContext();
+                }
+            }
+            chain.doFilter(req, res);
+        } catch (Exception ex) {
+            SecurityContextHolder.clearContext();
+            chain.doFilter(req, res);
         }
-
-        String token = auth.substring(7).trim();
-
-        if (!jwtService.isTokenValid(token)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        String subject = jwtService.getSubject(token); // username or email per our design
-
-        Optional<User> userOpt = subject.contains("@")
-                ? userRepository.findByEmail(subject.toLowerCase())
-                : userRepository.findByUsername(subject);
-
-        if (userOpt.isPresent() && Boolean.TRUE.equals(userOpt.get().getActive())) {
-            User user = userOpt.get();
-
-            // We don’t maintain roles yet, so set empty authorities.
-            UsernamePasswordAuthenticationToken authToken =
-                    new UsernamePasswordAuthenticationToken(user.getUsername(), null, Collections.emptyList());
-
-            SecurityContextHolder.getContext().setAuthentication(authToken);
-        }
-
-        filterChain.doFilter(request, response);
     }
 }

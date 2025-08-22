@@ -8,6 +8,8 @@ public class ExpenseResponse {
     private String category;
     private BigDecimal amount;
     private String description;
+
+
     private LocalDate dateOfExpense;
     private boolean active;
     private Long userId;

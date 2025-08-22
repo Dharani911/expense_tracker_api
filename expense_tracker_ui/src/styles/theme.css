@@ -1,0 +1,32 @@
+:root{
+  --bg: #0e1013;              /* app background */
+  --panel: #151922;           /* cards/panels */
+  --panel-2: #1b2130;         /* inputs / secondary */
+  --text: #e9eef7;            /* primary text */
+  --muted: #9aa7b6;           /* secondary text */
+  --line: #2a3242;            /* subtle borders */
+
+  --brand: #35b6b0;           /* accent */
+  --brand-2: #2a9e99;         /* accent hover */
+  --brand-ghost: rgba(53,182,176,.22);
+
+  --danger: #ff6b6b;
+  --danger-bg: rgba(255,107,107,.12);
+
+  --radius-lg: 18px;
+  --radius-md: 12px;
+  --shadow-1: 0 10px 30px rgba(0,0,0,.35);
+  --shadow-2: 0 8px 22px rgba(0,0,0,.28);
+
+  --font: "Poppins", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+html, body, #root {height:100%;}
+body{
+  margin:0;
+  background: radial-gradient(1200px 1200px at 90% -10%, rgba(53,182,176,.12), transparent 60%),
+              radial-gradient(900px 900px at -10% 110%, rgba(53,182,176,.08), transparent 60%),
+              var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+}

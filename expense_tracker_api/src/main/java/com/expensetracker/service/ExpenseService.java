@@ -60,7 +60,7 @@ public class ExpenseService {
         Expense expense = expenseRepository.findByIdAndUser_Id(id, current.getId())
                 .orElseThrow(() -> new BadRequestException("Expense not found."));
 
-        // Apply allowed changes
+
         ExpenseMapper.copyToEntity(expense, request);
 
         Expense saved = expenseRepository.save(expense);
@@ -93,7 +93,7 @@ public class ExpenseService {
                 .stream().map(ExpenseMapper::toResponse).toList();
     }
 
-    /* ---- helpers (simple + local) ---- */
+
 
     private Specification<Expense> buildSpec(
             Long userId, String category, LocalDate start, LocalDate end,

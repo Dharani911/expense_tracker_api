@@ -26,7 +26,7 @@ public class JwtService {
             @Value("${app.jwt.secret}") String secret,
             @Value("${app.jwt.expirationMinutes}") long expirationMinutes
     ) {
-        // Secret is treated as plain text; if you switch to Base64, decode it first.
+
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
         this.expirationMinutes = expirationMinutes;
     }

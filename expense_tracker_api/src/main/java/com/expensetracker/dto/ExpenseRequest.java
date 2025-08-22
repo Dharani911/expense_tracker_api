@@ -19,6 +19,7 @@ public class ExpenseRequest {
     private String description;
 
     @NotNull
+    @PastOrPresent(message = "Expense date cannot be in the future")
     private LocalDate dateOfExpense;
 
     // getters/setters

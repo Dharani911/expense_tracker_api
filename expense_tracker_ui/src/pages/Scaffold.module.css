@@ -1,0 +1,12 @@
+.page{ min-height:100vh; }
+.container{ width:min(960px, 92vw); margin: 18px auto 28px; }
+.header{
+  display:flex; align-items:baseline; justify-content:space-between; margin-bottom:12px;
+}
+.h2{ margin:0; font-size:22px; font-weight:900; letter-spacing:.3px; }
+.headerNote{ color: var(--muted); font-size:12px; }
+.error{
+  background: var(--danger-bg); color: var(--danger);
+  border:1px solid rgba(255,107,107,.35); padding:10px 12px; border-radius: var(--radius-md); margin-bottom:10px;
+}
+.loading{ color: var(--muted); text-align:center; padding:20px 0; }

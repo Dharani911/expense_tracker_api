@@ -1,0 +1,25 @@
+.sectionbar{
+  width:100%;
+  background: var(--panel-2); /* subtle contrast from top bar */
+  border-bottom: 1px solid var(--line);
+}
+.sectionbar-inner{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 10px 16px;
+  display: flex;
+  gap: 12px;
+}
+.section-tab{
+  appearance:none; border:none; cursor:pointer;
+  padding:10px 14px; border-radius: 10px;
+  background: transparent; color: var(--text);
+  font-weight: 800; letter-spacing:.2px;
+}
+.section-tab:hover{
+  background: rgba(255,255,255,.05);
+}
+.section-tab.active{
+  background: var(--brand-ghost); /* very soft brand tint */
+  outline: 2px solid var(--brand-faint);
+}

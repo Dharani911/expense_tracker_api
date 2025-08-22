@@ -4,6 +4,7 @@ import com.expensetracker.dto.ExpenseRequest;
 import com.expensetracker.dto.ExpenseResponse;
 import com.expensetracker.mapper.ExpenseMapper;
 import com.expensetracker.model.Expense;
+import com.expensetracker.model.ExpenseCategory;
 import com.expensetracker.service.ExpenseService;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -74,6 +76,14 @@ public class ExpenseController {
     ) {
         return ResponseEntity.ok(
                 expenseService.searchExpenses(category, start, end, minAmount, maxAmount, q)
+        );
+    }
+    @GetMapping("/categories")
+    public ResponseEntity<List<String>> categories() {
+        return ResponseEntity.ok(
+                Arrays.stream(ExpenseCategory.values())
+                        .map(Enum::name)
+                        .toList()
         );
     }
 
